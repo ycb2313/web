@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>高级Web技术实验二</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    /* 导航栏 */
+    .header {
+      height: 70px;
+      background: #2c3e50;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header h2 {
+      font-weight: normal;
+    }
+    .header button {
+      margin-left: 10px;
+      padding: 10px 18px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .header button:hover {
+      background: #2980b9;
+    }
+
+    /* Banner */
+    .banner {
+      padding: 80px 20px;
+      text-align: center;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                  url('https://picsum.photos/id/180/1920/600') center/cover no-repeat;
+      color: white;
+    }
+    .banner h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .banner p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      opacity: 0.95;
+    }
+    .banner button {
+      padding: 14px 30px;
+      background: white;
+      color: #3498db;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* 功能区 */
+    .feature {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 20px;
+    }
+    .feature-row {
+      display: flex;
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    .feature-box {
+      flex: 1;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      transition: 0.3s;
+    }
+    .feature-box:hover {
+      transform: translateY(-5px);
+    }
+    .feature-box img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 15px;
+      object-fit: contain;
+    }
+    .feature-box h3 {
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+    .feature-box p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .feature-box button {
+      padding: 9px 18px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* 弹窗 */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-box {
+      background: white;
+      width: 420px;
+      padding: 40px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .modal-box h3 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      font-size: 22px;
+    }
+    .form-item {
+      margin-bottom: 18px;
+    }
+    .form-item label {
+      display: inline-block;
+      width: 85px;
+      font-weight: 500;
+    }
+    .form-item input {
+      width: 220px;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    .tip {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-left: 88px;
+      height: 16px;
+    }
+    .btn-row {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .btn-row button {
+      padding: 10px 16px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-prim {
+      background: #3498db;
+      color: white;
+    }
+    .btn-close {
+      background: #95a5a6;
+      color: white;
+    }
+
+    /* 底部 */
+    .footer {
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 25px 0;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- 头部 -->
+  <div class="header">
+    <h2>云端编程学习平台</h2>
+    <div>
+      <button @click="showLogin=true">登录</button>
+      <button @click="showRegister=true">注册</button>
+    </div>
+  </div>
+
+  <!-- Banner -->
+  <div class="banner">
+    <h1>云端编程，浏览器里边学边练</h1>
+    <p>软件定义一切，网络连接时空，学习软件技术，创造未来世界。</p>
+    <button @click="alert('开始学习！')">马上学习</button>
+  </div>
+
+  <!-- 功能区 -->
+  <div class="feature">
+    <div class="feature-row">
+      <div class="feature-box">
+        <img src="https://picsum.photos/id/0/200/200" alt="云端实验室">
+        <h3>云端编程实验室</h3>
+        <p>独立环境，打开即用，无需配置</p>
+        <button>了解详情</button>
+      </div>
+      <div class="feature-box">
+        <img src="https://picsum.photos/id/160/200/200" alt="双屏学习">
+        <h3>双屏同步学习</h3>
+        <p>视频学习 + 实操练习同步进行</p>
+        <button>了解详情</button>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature-box">
+        <img src="https://picsum.photos/id/48/200/200" alt="教学服务">
+        <h3>丰富教学服务</h3>
+        <p>答疑、作业、考试一站式完成</p>
+        <button>马上学习</button>
+      </div>
+      <div class="feature-box">
+        <img src="https://picsum.photos/id/119/200/200" alt="多端同步">
+        <h3>多端学习记录</h3>
+        <p>电脑/手机实时同步学习进度</p>
+        <button>马上学习</button>
+      </div>
+      <div class="feature-box">
+        <img src="https://picsum.photos/id/2/200/200" alt="高质量课程">
+        <h3>高质量课程</h3>
+        <p>企业级实战项目，轻松掌握技能</p>
+        <button>马上学习</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    ©2026 云端编程平台 版权所有
+  </div>
+
+  <!-- 登录弹窗 -->
+  <div class="modal" v-if="showLogin">
+    <div class="modal-box">
+      <h3>用户登录</h3>
+      <div class="form-item">
+        <label>用户名</label>
+        <input v-model="login.username" placeholder="请输入用户名">
+      </div>
+      <div class="tip" v-if="loginTip && !login.username">用户名不能为空！</div>
+
+      <div class="form-item">
+        <label>密码</label>
+        <input type="password" v-model="login.pwd" placeholder="请输入密码">
+      </div>
+      <div class="tip" v-if="loginTip && !login.pwd">密码不能为空！</div>
+
+      <div class="btn-row">
+        <button class="btn-prim" @click="toLogin">登录</button>
+        <button class="btn-prim" @click="showRegister=true; showLogin=false">去注册</button>
+        <button class="btn-close" @click="showLogin=false">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 注册弹窗 -->
+  <div class="modal" v-if="showRegister">
+    <div class="modal-box">
+      <h3>用户注册</h3>
+      <div class="form-item">
+        <label>用户名</label>
+        <input v-model="reg.username" placeholder="请输入用户名">
+      </div>
+      <div class="tip" v-if="regTip && !reg.username">用户名不能为空！</div>
+
+      <div class="form-item">
+        <label>密码</label>
+        <input type="password" v-model="reg.pwd" placeholder="请输入密码">
+      </div>
+
+      <div class="form-item">
+        <label>确认密码</label>
+        <input type="password" v-model="reg.repwd" placeholder="请再次输入密码">
+      </div>
+      <div class="tip" v-if="regTip && reg.pwd !== reg.repwd">两次密码输入不一致！</div>
+
+      <div class="btn-row">
+        <button class="btn-prim" @click="toReg">提交注册</button>
+        <button class="btn-prim" @click="showLogin=true; showRegister=false">去登录</button>
+        <button class="btn-close" @click="showRegister=false">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    showLogin: false,
+    showRegister: false,
+    login: { username: '', pwd: '' },
+    loginTip: false,
+    reg: { username: '', pwd: '', repwd: '' },
+    regTip: false
+  },
+  methods: {
+    // 登录验证
+    toLogin() {
+      this.loginTip = true
+      if (!this.login.username || !this.login.pwd) {
+        return
+      }
+      alert('登录成功！')
+      this.showLogin = false
+      this.loginTip = false
+    },
+    // 注册验证
+    toReg() {
+      this.regTip = true
+      if (!this.reg.username || !this.reg.pwd || this.reg.pwd !== this.reg.repwd) {
+        return
+      }
+      // 提交到 json-server
+      axios.post('http://localhost:3000/users', {
+        username: this.reg.username,
+        password: this.reg.pwd
+      }).then(() => {
+        alert('注册成功！')
+        this.showRegister = false
+        this.regTip = false
+      })
+    }
+  }
+})
+</script>
+</body>
+</html>
